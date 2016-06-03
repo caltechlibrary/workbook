@@ -22,6 +22,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"path"
+	"strings"
 
 	// Caltech Library packages
 
@@ -104,6 +105,37 @@ func (wb *Workbook) String() string {
 	return string(src)
 }
 
-func (wb *Workbook) ToContainer() ([]string, error) {
-	return nil, fmt.Errorf("ToContainer() not implemented.")
+func (wb *Workbook) GetSheetNames() []string {
+	var results []string
+	for _, item := range wb.Sheets {
+		results = append(results, item.Name)
+	}
+	return results
+}
+
+func (wb *Workbook) GetSheetByName(name string) (*Sheet, error) {
+	for _, item := range wb.Sheets {
+		if strings.Compare(item.Name, name) == 0 {
+			return &item, nil
+		}
+	}
+	return nil, fmt.Errorf("Can't find %s", name)
+}
+
+func (wb *Workbook) GetSheet(i int) (*Sheet, error) {
+	if i < 0 || len(wb.Sheets) <= i {
+		return nil, fmt.Errorf("Sheet No. %d, index out of bounds", i)
+	}
+	return &wb.Sheets[i], nil
+}
+
+func (sh *Sheet) GetRow(i int) (*Row, error) {
+	if len(sh.Rows) <= i {
+		return nil, fmt.Errorf("Row No. %d, index out of bounds", i)
+	}
+	return &sh.Rows[i], nil
+}
+
+func (sh *Sheet) RowCount() int {
+	return len(sh.Rows)
 }
